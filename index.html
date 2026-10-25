@@ -15,7 +15,8 @@
   --on-dark: #ffffff; --on-dark-muted: #c4d6f2;
   --shadow: 0 1px 2px rgba(20,42,79,.05), 0 8px 24px rgba(20,42,79,.09);
   --shadow-lg: 0 24px 60px rgba(20,42,79,.2);
-  --display: "Arial Narrow", "Roboto Condensed", "Helvetica Neue", system-ui, sans-serif;
+  /* Font hẹp có đủ dấu tiếng Việt. KHÔNG dùng "Arial Narrow": thiếu 92 chữ có dấu (Ả, Ầ, Ổ, Ơ, Ư…) → lẫn font (kiểm tra 2026-10-25) */
+  --display: "Bahnschrift SemiCondensed", "Bahnschrift", "Avenir Next Condensed", "Roboto Condensed", sans-serif-condensed, system-ui, sans-serif;
   --tabbar-h: 64px;
 }
 @media (prefers-color-scheme: dark) {
@@ -277,7 +278,7 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
 </div>
 
 <script>
-window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-25T06:35:11.713Z"};
+window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-25T06:43:41.992Z"};
 // Dự án này không đọc Google Sheets bằng gviz/CSV: mọi dữ liệu đi qua Apps Script (xem src/app.js → api()).
 // File giữ lại vì scripts/build.js ghép nó vào bản build; chỉ chứa hàm định dạng ngày giờ dùng chung.
 
