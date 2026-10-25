@@ -185,6 +185,15 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
 .sheet-sub { margin: 0 0 12px; color: var(--muted); }
 .sheet-actions { display: grid; gap: 10px; margin-top: 20px; }
 
+/* ===== Màn hình chọn ngôn ngữ (lần đầu vào web) ===== */
+.lang-gate { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; overflow-y: auto;
+  padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+  background: repeating-linear-gradient(-28deg, rgba(255,255,255,.04) 0 6px, transparent 6px 22px), var(--navy); color: var(--on-dark); }
+.lang-gate-box { width: 100%; max-width: 360px; display: grid; gap: 16px; justify-items: center; text-align: center; }
+.lang-gate-title { margin: 8px 0; display: grid; gap: 2px; font-size: 22px; line-height: 1.35; font-weight: 800; }
+.lang-gate .btn-primary { min-height: 56px; font-size: 20px; }
+.lang-gate .btn-primary:lang(vi) { font-style: italic; }
+
 /* ===== Tải / lỗi ===== */
 .loading-screen { position: fixed; inset: 0; z-index: 50; background: var(--navy); color: var(--on-dark-muted); display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 18px; padding: 16px; text-align: center; }
@@ -207,6 +216,16 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
   </symbol>
 </svg>
 <!-- data-i18n: chữ giao diện được dịch; data-i18n-aria / data-i18n-ph: nhãn đọc màn hình / chữ gợi ý. Tên web (lang="vi") giữ nguyên. -->
+
+<!-- Màn hình chọn ngôn ngữ: hiện ngay khi vào web nếu máy này chưa từng chọn (song ngữ cố định, không dịch) -->
+<div class="lang-gate hidden" id="lang-gate" role="dialog" aria-modal="true" aria-labelledby="lang-gate-title">
+  <div class="lang-gate-box">
+    <div class="logo"><span class="logo-mark"><svg aria-hidden="true"><use href="#i-shuttle"/></svg></span><span class="site-name display" lang="vi"></span></div>
+    <h1 class="lang-gate-title" id="lang-gate-title"><span lang="vi">Chọn ngôn ngữ</span><span lang="zh-Hans">选择语言</span></h1>
+    <button type="button" class="btn-primary lang-pick" data-lang="vi" lang="vi">Tiếng Việt</button>
+    <button type="button" class="btn-primary lang-pick" data-lang="zh" lang="zh-Hans">简体中文</button>
+  </div>
+</div>
 
 <div class="loading-screen" id="loading-screen">
   <div class="logo"><span class="logo-mark"><svg aria-hidden="true"><use href="#i-shuttle"/></svg></span><span class="site-name display" lang="vi"></span></div>
@@ -297,7 +316,7 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
 </div>
 
 <script>
-window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-25T07:00:02.696Z"};
+window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-25T07:04:50.068Z"};
 // Dự án này không đọc Google Sheets bằng gviz/CSV: mọi dữ liệu đi qua Apps Script (xem src/app.js → api()).
 // File giữ lại vì scripts/build.js ghép nó vào bản build; chỉ chứa hàm định dạng ngày giờ dùng chung.
 
@@ -695,9 +714,9 @@ function show(v) {
 }
 
 // ===== Ngôn ngữ (lưu lựa chọn trên máy người xem; không lưu được thì vẫn chạy bình thường) =====
-function setLang(l) {
+function setLang(l, save = true) {
   LANG = l === "zh" ? "zh" : "vi";
-  try { localStorage.setItem("lang", LANG); } catch (e) {}
+  if (save) { try { localStorage.setItem("lang", LANG); } catch (e) {} $("lang-gate").classList.add("hidden"); }
   document.documentElement.lang = LANG === "zh" ? "zh-Hans" : "vi";
   document.querySelectorAll("[data-i18n]").forEach(n => n.textContent = t(n.dataset.i18n));
   document.querySelectorAll("[data-i18n-aria]").forEach(n => n.setAttribute("aria-label", t(n.dataset.i18nAria)));
@@ -710,8 +729,13 @@ function setLang(l) {
   closeSheet();
 }
 function savedLang() {
-  try { const s = localStorage.getItem("lang"); if (s) return s; } catch (e) {}
-  return /^zh/i.test(navigator.language || "") ? "zh" : "vi";
+  try { return localStorage.getItem("lang"); } catch (e) { return null; }
+}
+// Hiện màn hình chọn ngôn ngữ (lần đầu vào web, hoặc khi không lưu được lựa chọn)
+function showLangGate() {
+  $("lang-gate").classList.remove("hidden");
+  const first = document.querySelector('.lang-pick[data-lang="' + LANG + '"]');
+  if (first) first.focus();
 }
 
 // ===== Khởi động =====
@@ -719,13 +743,15 @@ const siteName = (CFG.site && CFG.site.name) || "Cầu Lông";
 document.title = siteName;
 document.querySelectorAll(".site-name").forEach(n => n.textContent = siteName);
 document.querySelectorAll(".tab").forEach(tb => tb.onclick = () => show(tb.dataset.view));
-document.querySelectorAll(".lang-btn").forEach(b => b.onclick = () => setLang(b.dataset.lang));
+document.querySelectorAll(".lang-btn, .lang-pick").forEach(b => b.onclick = () => setLang(b.dataset.lang));
 $("reload").onclick = loadState;
 $("load-retry").onclick = loadState;
 $("reg-form").onsubmit = submitRegister;
 $("sheet-bg").onclick = e => { if (e.target.id === "sheet-bg") closeSheet(); };
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
-setLang(savedLang());
+const saved = savedLang();
+if (saved) setLang(saved);
+else { setLang(/^zh/i.test(navigator.language || "") ? "zh" : "vi", false); showLangGate(); }  // web tải ngầm phía sau trong lúc chọn
 show("vote");
 loadState();
 
