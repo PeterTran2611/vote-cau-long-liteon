@@ -113,7 +113,14 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
 .pill-mo { background: var(--lime); color: var(--on-lime); }
 .pill-du { background: #ffb443; color: #3b2300; }
 .pill-dong, .pill-chot { background: rgba(255,255,255,.16); color: var(--on-dark); }
-.pill-sapmo { background: var(--blue-2); color: #ffffff; }
+.pill-sapmo { background: #1f6fd1; color: #ffffff; }
+.pill-giaoluu { background: #ffffff; color: var(--navy); }
+.count-break { margin-top: 6px; color: var(--muted); font-size: 14px; font-weight: 600; }
+.gl-wrap { margin-top: 16px; }
+.gl-wrap .s-form { margin-top: 0; }
+.gl-hint { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.gl-hint:empty { display: none; }
+.gl-plus { flex: none; padding: 4px 10px; border-radius: 8px; background: var(--accent-soft); color: var(--text); font-size: 13px; font-weight: 700; line-height: 1.35; }
 .s-info { display: grid; gap: 6px; margin-top: 14px; }
 .info-row { display: flex; align-items: flex-start; gap: 10px; }
 .info-row svg { color: var(--blue); margin-top: 2px; }
@@ -316,7 +323,7 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
 </div>
 
 <script>
-window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-25T07:04:50.068Z"};
+window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-25T07:19:36.595Z"};
 // Dự án này không đọc Google Sheets bằng gviz/CSV: mọi dữ liệu đi qua Apps Script (xem src/app.js → api()).
 // File giữ lại vì scripts/build.js ghép nó vào bản build; chỉ chứa hàm định dạng ngày giờ dùng chung.
 
@@ -362,7 +369,11 @@ const I18N = {
     "done": "Đã cập nhật.", "cancelQ": "Huỷ vote?", "cancelYes": "Huỷ vote", "no": "Không", "cancelling": "Đang huỷ…",
     "histLoading": "Đang tải lịch sử…", "histEmpty": "Chưa có buổi nào đã diễn ra.", "people": "{n} người", "nobody": "Không có ai tham gia.", "close": "Đóng",
     "build": "Bản build {t}",
-    "st.mo": "Đang mở", "st.du": "Đã đủ người", "st.dong": "Đã đóng", "st.sapmo": "Sắp mở", "st.chot": "Đã chốt",
+    "st.mo": "Đang mở", "st.du": "Đã đủ người", "st.dong": "Đã đóng", "st.sapmo": "Sắp mở", "st.chot": "Đã chốt", "st.giaoluu": "Tuyển giao lưu",
+    "gl.btn": "Tuyển giao lưu", "gl.until": "Giao lưu đến:", "gl.breakdown": "Vote {v} · Giao lưu {g}", "gl.member": "Thành viên đăng ký",
+    "gl.companions": "Số người đi cùng", "gl.left": "Còn {n} chỗ", "gl.submit": "Đăng ký giao lưu", "gl.list": "Giao lưu ({n} người)",
+    "gl.plus": "+{n} người đi cùng", "gl.votedNote": "{name} đã vote — chỉ tính số người đi cùng.", "gl.needCompanion": "Người đã vote phải có ít nhất 1 người đi cùng.",
+    "gl.over": "Chỉ còn {n} chỗ.", "gl.badNum": "Số người đi cùng không hợp lệ.", "gl.noCancel": "Lưu ý: đăng ký giao lưu không huỷ được trên web.",
     "err.noApi": "Chưa cấu hình địa chỉ Apps Script (config.json → app.apiUrl).", "err.timeout": "Máy chủ phản hồi quá lâu. Kiểm tra mạng rồi thử lại.",
     "err.network": "Không kết nối được máy chủ. Kiểm tra mạng internet rồi thử lại.", "err.generic": "Có lỗi xảy ra, vui lòng thử lại."
   },
@@ -380,7 +391,11 @@ const I18N = {
     "done": "已更新。", "cancelQ": "取消投票？", "cancelYes": "取消投票", "no": "不取消", "cancelling": "正在取消…",
     "histLoading": "正在加载历史记录…", "histEmpty": "暂无已结束的场次。", "people": "{n} 人", "nobody": "无人参加。", "close": "关闭",
     "build": "版本 {t}",
-    "st.mo": "开放中", "st.du": "已满员", "st.dong": "已关闭", "st.sapmo": "即将开放", "st.chot": "已截止",
+    "st.mo": "开放中", "st.du": "已满员", "st.dong": "已关闭", "st.sapmo": "即将开放", "st.chot": "已截止", "st.giaoluu": "招募交流中",
+    "gl.btn": "招募交流", "gl.until": "交流报名截止：", "gl.breakdown": "投票 {v} · 交流 {g}", "gl.member": "报名会员",
+    "gl.companions": "同行人数", "gl.left": "剩余 {n} 个名额", "gl.submit": "报名交流", "gl.list": "交流（{n} 人）",
+    "gl.plus": "+{n} 名同行", "gl.votedNote": "{name} 已投票——只计算同行人数。", "gl.needCompanion": "已投票者至少需要 1 名同行人员。",
+    "gl.over": "仅剩 {n} 个名额。", "gl.badNum": "同行人数无效。", "gl.noCancel": "注意：交流报名提交后无法在网页上取消。",
     "err.noApi": "尚未配置 Apps Script 地址（config.json → app.apiUrl）。", "err.timeout": "服务器响应超时，请检查网络后重试。",
     "err.network": "无法连接服务器，请检查网络后重试。", "err.generic": "发生错误，请重试。"
   }
@@ -405,7 +420,13 @@ const SERVER_ZH = [
   [/^Đã vote cho (.+)\.$/, name => `已为 ${name} 投票。`],
   [/^Không tìm thấy lượt vote/, () => "找不到该投票（可能已取消）。"],
   [/^Đã hết thời gian huỷ/, () => "本场次已过取消时间。"],
-  [/^Đã huỷ vote của (.+)\.$/, name => `已取消 ${name} 的投票。`]
+  [/^Đã huỷ vote của (.+)\.$/, name => `已取消 ${name} 的投票。`],
+  [/^Số người đi cùng không hợp lệ/, () => "同行人数无效。"],
+  [/^Buổi này hiện không tuyển giao lưu/, () => "该场次目前不招募交流。"],
+  [/^(.+) đã đăng ký giao lưu buổi này rồi\.$/, name => `${name} 已报名本场交流。`],
+  [/^Người đã vote phải có ít nhất 1 người đi cùng/, () => "已投票者至少需要 1 名同行人员。"],
+  [/^Chỉ còn (\d+) chỗ/, n => `仅剩 ${n} 个名额。`],
+  [/^Đã đăng ký giao lưu cho (.+)\.$/, name => `已为 ${name} 报名交流。`]
 ];
 
 let LANG = "vi";
@@ -545,19 +566,24 @@ function sessionCard(s) {
   info.append(infoRow("clock", "", s.gio, true), infoRow("pin", "", s.san, true));
   if (tt.ma === "sapmo") info.append(infoRow("unlock", t("openAt"), fmtMoc(s.moLuc)));
   info.append(infoRow("lock", t("closeAt"), fmtMoc(s.dongLuc)));
+  if (tt.ma === "giaoluu" && s.batDauLuc) info.append(infoRow("clock", t("gl.until"), fmtMoc(s.batDauLuc)));
 
-  const n = s.votes.length, max = Number(s.max) || 0;
+  const n = s.votes.length, gl = s.giaoLuu || [], soGL = Number(s.soGiaoLuu) || 0;
+  const tong = s.tong != null ? Number(s.tong) : n, max = Number(s.max) || 0;  // tổng = vote + chỗ giao lưu
   const count = el("div", "s-count"), line = el("div", "count-line");
-  line.append(el("span", "count-num", String(n)), el("span", "count-max", t("ofMax", { max: s.max })));
-  const bar = el("div", "bar" + (max && n >= max ? " full" : "")), fill = el("span");
-  fill.style.width = (max ? Math.min(100, n / max * 100) : 0) + "%";
+  line.append(el("span", "count-num", String(tong)), el("span", "count-max", t("ofMax", { max: s.max })));
+  const bar = el("div", "bar" + (max && tong >= max ? " full" : "")), fill = el("span");
+  fill.style.width = (max ? Math.min(100, tong / max * 100) : 0) + "%";
   bar.append(fill); count.append(line, bar);
+  if (soGL) count.append(el("div", "count-break", t("gl.breakdown", { v: n, g: soGL })));
 
   card.append(head, info, count);
   if (tt.voteDuoc) card.append(voteForm(s));
+  if (tt.giaoLuuDuoc) card.append(guestForm(s, max - tong));
   const msg = el("p", "msg"); msg.setAttribute("role", "status"); msg.setAttribute("aria-live", "polite");
   card.append(msg);
 
+  if (gl.length) card.append(guestList(gl, soGL));
   if (n) {
     const list = el("div", "s-list"), ol = el("ol", "voters");
     list.append(el("h3", null, t("votedList", { n })));
@@ -575,6 +601,8 @@ function sessionCard(s) {
   }
   return card;
 }
+
+const tongCua = s => (s.tong != null ? Number(s.tong) : s.votes.length);  // máy chủ cũ chưa có giao lưu → chỉ đếm vote
 
 function voterRow(v, i) {
   const li = el("li", "voter"), who = el("div", "who");
@@ -608,6 +636,63 @@ function voteForm(s) {
     catch (err) { btn.disabled = false; btn.textContent = t("vote"); showMsg(s.ma, err.message, false); }
   };
   return f;
+}
+
+// ===== Tuyển giao lưu (hết giờ vote, chưa tới giờ chơi, còn chỗ) =====
+function guestForm(s, con) {
+  const wrap = el("div", "gl-wrap");
+  const open = el("button", "btn-primary btn-guest", t("gl.btn")); open.type = "button";
+  open.setAttribute("aria-expanded", "false");
+  const f = el("form", "s-form hidden"); f.noValidate = true;
+  const voted = new Set(s.votes.map(v => key(v.ten)));
+  const daDK = new Set((s.giaoLuu || []).map(g => key(g.ten)));
+  const avail = STATE.members.filter(m => !daDK.has(key(m.ten)));  // giữ đúng thứ tự trong Sheets
+  const search = el("input", "input"); search.type = "search"; search.placeholder = t("search"); search.setAttribute("aria-label", t("searchLabel"));
+  const sel = el("select", "select"); sel.setAttribute("aria-label", t("gl.member"));
+  const fill = () => {
+    const q = key(search.value);
+    sel.replaceChildren(new Option(avail.length ? t("pick") : t("noMember"), ""));
+    avail.filter(m => !q || key(m.ten + " " + m.boPhan).includes(q))
+      .forEach(m => { const o = new Option(m.boPhan ? `${m.ten} — ${m.boPhan}` : m.ten, m.ten); o.lang = "vi"; sel.append(o); });
+    if (q && sel.options.length === 2) sel.selectedIndex = 1;
+    note();
+  };
+  const field = el("label", "field"), lab = el("span", null, t("gl.companions"));
+  const num = el("input", "input"); num.type = "number"; num.min = "0"; num.step = "1"; num.inputMode = "numeric"; num.value = "0";
+  field.append(lab, num);
+  const hint = el("p", "gl-hint", t("gl.left", { n: con }));
+  const votedNote = el("p", "gl-hint");
+  const note = () => { votedNote.textContent = sel.value && voted.has(key(sel.value)) ? t("gl.votedNote", { name: sel.value }) : ""; };
+  sel.onchange = note;
+  search.oninput = fill; fill();
+  const btn = el("button", "btn-primary", t("gl.submit")); btn.type = "submit";
+  f.append(search, sel, votedNote, field, hint, btn, el("p", "gl-hint", t("gl.noCancel")));
+  open.onclick = () => { f.classList.remove("hidden"); open.classList.add("hidden"); open.setAttribute("aria-expanded", "true"); search.focus(); };
+  f.onsubmit = async e => {
+    e.preventDefault();
+    if (!sel.value) return showMsg(s.ma, t("needPick"), false);
+    const raw = String(num.value).trim();
+    if (!/^\d{1,3}$/.test(raw)) return showMsg(s.ma, t("gl.badNum"), false);
+    const diCung = Number(raw), daVote = voted.has(key(sel.value));
+    if (daVote && diCung < 1) return showMsg(s.ma, t("gl.needCompanion"), false);
+    if ((daVote ? diCung : 1 + diCung) > con) return showMsg(s.ma, t("gl.over", { n: con }), false);
+    btn.disabled = true; btn.textContent = t("sending");
+    try { const res = await api("guest", { buoi: s.ma, ten: sel.value, diCung: String(diCung) }); afterAction(res, s.ma); }
+    catch (err) { btn.disabled = false; btn.textContent = t("gl.submit"); showMsg(s.ma, err.message, false); }
+  };
+  wrap.append(open, f);
+  return wrap;
+}
+function guestList(gl, soGL) {
+  const list = el("div", "s-list"), ol = el("ol", "voters");
+  list.append(el("h3", null, t("gl.list", { n: soGL })));
+  gl.forEach((g, i) => {
+    const li = voterRow(g, i), dc = Number(g.diCung) || 0;
+    if (dc) li.append(el("span", "gl-plus", t("gl.plus", { n: dc })));
+    ol.append(li);
+  });
+  list.append(ol);
+  return list;
 }
 
 function afterAction(res, ma) {
@@ -654,7 +739,7 @@ function renderHistory() {
     const main = el("div", "h-main"), sub = el("span");
     sub.append(vi(el("span", null, s.gio)), document.createTextNode(" · "), vi(el("span", null, s.san)));
     main.append(el("b", null, `${fmtThu(s)} · ${fmtNgay(s.ngay)}`), sub);
-    b.append(main, el("span", "h-count", t("people", { n: s.votes.length })));
+    b.append(main, el("span", "h-count", t("people", { n: tongCua(s) })));
     b.onclick = () => openHistory(s);
     box.append(b);
   });
@@ -663,14 +748,16 @@ function openHistory(s) {
   const body = el("div");
   const sub = el("p", "sheet-sub");
   sub.append(vi(el("span", null, s.gio)), document.createTextNode(" · "), vi(el("span", null, s.san)),
-    document.createTextNode(" · " + t("people", { n: s.votes.length })));
+    document.createTextNode(" · " + t("people", { n: tongCua(s) })));
   body.append(sub);
-  if (!s.votes.length) body.append(el("p", "empty", t("nobody")));
-  else {
+  const gl = s.giaoLuu || [];
+  if (!s.votes.length && !gl.length) body.append(el("p", "empty", t("nobody")));
+  if (s.votes.length) {
     const ol = el("ol", "voters");
     s.votes.forEach((v, i) => ol.append(voterRow(v, i)));
     body.append(ol);
   }
+  if (gl.length) body.append(guestList(gl, Number(s.soGiaoLuu) || 0));
   openSheet(`${fmtThu(s)} · ${fmtNgay(s.ngay)}`, "", body, [[t("close"), "btn-ghost", closeSheet]]);
 }
 
