@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#21406f">
+<title>Cầu Lông LITEON</title>
+<style>
+/* ===== Màu: chủ đề sân cầu — xanh dương, xanh navy, xanh chanh; bộ sáng và tối ===== */
+:root {
+  --bg: #eaf2fc; --surface: #ffffff; --surface-2: #f4f8fd; --text: #142a4f; --muted: #56688a; --line: #d6e2f2;
+  --blue: #2f8ae8; --blue-2: #4fa6f6; --navy: #21406f; --navy-2: #2b5288; --lime: #b4df1e; --on-lime: #142a4f;
+  --accent: #2f8ae8; --accent-soft: #e2effd;
+  --bad: #c9362b; --bad-soft: #fde9e7; --warn: #9a5c00; --warn-soft: #fff1d6; --gray-soft: #e9eef5;
+  --on-dark: #ffffff; --on-dark-muted: #c4d6f2;
+  --shadow: 0 1px 2px rgba(20,42,79,.05), 0 8px 24px rgba(20,42,79,.09);
+  --shadow-lg: 0 24px 60px rgba(20,42,79,.2);
+  --display: "Arial Narrow", "Roboto Condensed", "Helvetica Neue", system-ui, sans-serif;
+  --tabbar-h: 64px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1527; --surface: #13223c; --surface-2: #182a48; --text: #eaf1fb; --muted: #9fb2d1; --line: #263b5e;
+    --blue: #3b8fe6; --blue-2: #5aa9ff; --navy: #0d1c35; --navy-2: #17305a; --lime: #c3ec2c; --on-lime: #0b1527;
+    --accent: #6cb4ff; --accent-soft: #1a3358;
+    --bad: #ff8a7d; --bad-soft: #3a1d1a; --warn: #f2b45a; --warn-soft: #33270f; --gray-soft: #1d2c46;
+    --on-dark-muted: #a9bfe3;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); --shadow-lg: 0 24px 60px rgba(0,0,0,.55);
+  }
+}
+* { box-sizing: border-box; }
+html, body { overflow-x: hidden; }  /* lưới an toàn — KHÔNG dùng để giấu phần tràn */
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+button, input, select { font: inherit; color: inherit; }
+.hidden { display: none !important; }
+svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* Dữ liệu dài luôn xuống dòng, không cắt, không tràn ngang */
+.card, .sheet, .hist-item, .voter, .msg, .info-row, .s-title, .s-date { overflow-wrap: anywhere; }
+/* Chữ tiêu đề kiểu thể thao: in hoa, nghiêng, đậm */
+.display { font-family: var(--display); font-style: italic; font-weight: 900; text-transform: uppercase; letter-spacing: .01em; line-height: 1.35; }
+.s-title.display, .detail-title.display { text-transform: none; }  /* chứa dữ liệu từ Sheets → giữ nguyên hoa/thường */
+
+/* ===== Khung trang (mobile-first) ===== */
+main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(var(--tabbar-h) + 32px + env(safe-area-inset-bottom)); }
+.topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: calc(8px + env(safe-area-inset-top)) 16px 8px; background: var(--navy); color: var(--on-dark); border-bottom: 4px solid var(--lime); }
+.logo { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 19px; }
+.logo-mark { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex: none; color: var(--on-lime);
+  background: var(--lime); transform: skewX(-8deg); }
+.logo-mark svg { width: 24px; height: 24px; transform: skewX(8deg) rotate(-30deg); stroke-width: 1.8; }
+.icon-btn { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 12px; border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.08); color: var(--on-dark); cursor: pointer; }
+
+/* Thanh tab: điện thoại nằm dưới đáy; máy tính nằm trong thanh trên */
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--navy); border-top: 4px solid var(--lime); padding: 4px 8px env(safe-area-inset-bottom); }
+.tab { min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: 0; background: none; color: var(--on-dark-muted); font-size: 13px; font-weight: 700; line-height: 1.35; cursor: pointer; border-radius: 12px; }
+.tab[aria-current="page"] { color: var(--lime); }
+.tab[aria-current="page"] svg { stroke-width: 2.6; }
+@media (min-width: 900px) {
+  .tabbar { position: static; display: flex; gap: 6px; border: 0; padding: 0; background: none; margin-left: auto; }
+  .tab { flex-direction: row; gap: 8px; min-height: 44px; padding: 0 16px; font-size: 15px; }
+  .tab[aria-current="page"] { background: var(--lime); color: var(--on-lime); }
+  main { padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ===== Băng tiêu đề: nền xanh có vệt sọc chéo + vạch lưới xanh chanh ===== */
+.hero { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 18px 22px; border-radius: 20px; color: var(--on-dark);
+  background:
+    linear-gradient(-6deg, transparent 0 6%, var(--lime) 6% 9%, transparent 9%),
+    repeating-linear-gradient(-28deg, rgba(255,255,255,.07) 0 6px, transparent 6px 22px),
+    linear-gradient(135deg, var(--blue-2), var(--blue) 55%, var(--navy-2));
+  box-shadow: var(--shadow); }
+.hero-text { min-width: 0; }
+.hero h1 { margin: 0; font-size: clamp(26px, 8vw, 40px); }
+.hero h1 .tag { display: inline-block; padding: 0 10px; margin-bottom: 6px; background: var(--navy); color: var(--blue-2); font-size: .55em; }
+.hero h1 .big { display: block; }
+.hero p { margin: 4px 0 0; color: #eef5ff; font-weight: 600; }
+.hero-shuttle { width: 72px; height: 72px; color: #ffffff; stroke-width: 1.6; transform: rotate(-35deg); }
+@media (max-width: 359px) { .hero-shuttle { display: none; } }
+
+.stack { display: grid; gap: 16px; margin-top: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); padding: 16px; }
+.empty { text-align: center; color: var(--muted); padding: 32px 16px; }
+
+/* ===== Thẻ buổi chơi ===== */
+.session { padding: 0 0 16px; }
+.session > :not(.s-head) { margin-left: 16px; margin-right: 16px; }
+.s-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 16px;
+  border-radius: 19px 19px 0 0; color: var(--on-dark); border-bottom: 4px solid var(--lime);
+  background: repeating-linear-gradient(-28deg, rgba(255,255,255,.06) 0 6px, transparent 6px 20px), var(--navy); }
+.s-title { margin: 0; font-size: 26px; }
+.s-date { color: var(--on-dark-muted); font-weight: 700; }
+.pill { display: inline-flex; align-items: center; min-height: 30px; padding: 2px 12px; border-radius: 8px; font-size: 13px; font-weight: 800;
+  line-height: 1.35; text-transform: uppercase; transform: skewX(-8deg); }
+.pill-mo { background: var(--lime); color: var(--on-lime); }
+.pill-du { background: #ffb443; color: #3b2300; }
+.pill-dong, .pill-chot { background: rgba(255,255,255,.16); color: var(--on-dark); }
+.pill-sapmo { background: var(--blue-2); color: #ffffff; }
+.s-info { display: grid; gap: 6px; margin-top: 14px; }
+.info-row { display: flex; align-items: flex-start; gap: 10px; }
+.info-row svg { color: var(--blue); margin-top: 2px; }
+.info-row b { font-weight: 700; }
+.s-count { margin-top: 16px; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); }
+.count-line { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.count-num { font-family: var(--display); font-style: italic; font-size: 40px; font-weight: 900; line-height: 1.35; color: var(--blue); }
+.count-max { color: var(--muted); font-weight: 700; }
+.bar { height: 10px; border-radius: 5px; background: var(--line); margin-top: 8px; }
+.bar > span { display: block; height: 100%; border-radius: 5px; background: var(--lime); }
+.bar.full > span { background: #ffb443; }
+
+.s-form { display: grid; gap: 10px; margin-top: 16px; }
+.input, .select { width: 100%; min-height: 48px; font-size: 16px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--surface); }
+.input:focus, .select:focus { outline: 3px solid var(--accent-soft); border-color: var(--blue); }
+.msg { margin: 12px 0 0; font-weight: 700; line-height: 1.5; }
+.msg:empty { display: none; }
+.msg.ok { color: var(--blue); }
+.msg.err { color: var(--bad); }
+
+.s-list h3 { margin: 20px 0 8px; font-size: 17px; }
+.voters { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.voter { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 10px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }
+.voter .num { flex: none; min-width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; background: var(--navy);
+  color: var(--lime); font-size: 13px; font-weight: 800; }
+.voter .who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.voter .who small { color: var(--muted); font-size: 13px; }
+.btn-cancel { flex: none; min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface);
+  color: var(--bad); font-weight: 700; cursor: pointer; }
+
+/* ===== Lịch sử ===== */
+.hist-item { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 14px 16px; border-radius: 18px;
+  border: 1px solid var(--line); border-left: 6px solid var(--lime); background: var(--surface); box-shadow: var(--shadow); cursor: pointer; }
+.hist-item .h-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.hist-item .h-main b { font-size: 17px; line-height: 1.35; }
+.hist-item .h-main span { color: var(--muted); font-size: 14px; }
+.hist-item .h-count { flex: none; font-weight: 800; color: var(--blue); }
+
+/* ===== Đăng ký ===== */
+.form { display: grid; gap: 14px; margin-top: 16px; }
+.field { display: grid; gap: 6px; }
+.field > span { font-weight: 700; }
+.field em { color: var(--bad); font-style: normal; }
+.field small { color: var(--muted); font-weight: 400; }
+
+/* ===== Nút ===== */
+.btn-primary { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 50px; border-radius: 12px; border: 0;
+  background: var(--lime); color: var(--on-lime); font-family: var(--display); font-style: italic; font-weight: 900; font-size: 19px;
+  text-transform: uppercase; letter-spacing: .02em; line-height: 1.35; cursor: pointer; box-shadow: 0 4px 0 rgba(20,42,79,.25); }
+.btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(20,42,79,.25); }
+.btn-primary:disabled { opacity: .6; cursor: default; }
+.btn-primary:focus-visible, .btn-ghost:focus-visible, .tab:focus-visible, .hist-item:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.btn-danger { background: var(--bad); color: #fff; }
+.btn-ghost { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--surface); font-weight: 700; cursor: pointer; }
+
+/* ===== Hộp thoại: điện thoại trượt từ dưới, máy tính ở giữa ===== */
+.sheet-bg { position: fixed; inset: 0; background: rgba(8,18,36,.55); display: none; z-index: 20; }
+.sheet-bg.open { display: block; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; max-height: 88vh; overflow-y: auto; background: var(--surface); margin: 0 auto; max-width: 640px;
+  border-radius: 24px 24px 0 0; border-top: 5px solid var(--lime); padding: 12px 20px calc(24px + env(safe-area-inset-bottom)); box-shadow: var(--shadow-lg); }
+@media (min-width: 900px) {
+  .sheet { left: 50%; top: 50%; bottom: auto; right: auto; transform: translate(-50%, -50%); width: min(560px, 92vw); max-height: 88vh; border-radius: 24px; padding: 24px; }
+  .grab { display: none; }
+}
+.grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 12px; }
+.detail-title { margin: 0 0 8px; font-size: 24px; }
+.sheet-sub { margin: 0 0 12px; color: var(--muted); }
+.sheet-actions { display: grid; gap: 10px; margin-top: 20px; }
+
+/* ===== Tải / lỗi ===== */
+.loading-screen { position: fixed; inset: 0; z-index: 50; background: var(--navy); color: var(--on-dark-muted); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 18px; padding: 16px; text-align: center; }
+.loading-screen .logo { color: var(--on-dark); }
+.loading-screen.hidden { display: none; }
+.loading-screen.error #load-msg { color: #ffb4aa; font-weight: 700; max-width: 460px; }
+.loading-screen .btn-primary { max-width: 220px; }
+.spinner { width: 38px; height: 38px; border: 4px solid rgba(255,255,255,.18); border-top-color: var(--lime); border-radius: 50%; animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } }
+.foot { text-align: center; color: var(--muted); font-size: 12px; padding: 28px 0 0; }
+
+</style>
+</head>
+<body>
+<!-- Hình quả cầu dùng chung -->
+<svg style="position:absolute;width:0;height:0" aria-hidden="true">
+  <symbol id="i-shuttle" viewBox="0 0 24 24">
+    <circle cx="12" cy="19" r="3"/><path d="M9.2 17.2 5 4M14.8 17.2 19 4M5 4q7-3 14 0M12 16V2.6M10.6 16.4 8.5 3.3M13.4 16.4l2.1-13.1M6.8 10h10.4"/>
+  </symbol>
+</svg>
+
+<div class="loading-screen" id="loading-screen">
+  <div class="logo"><span class="logo-mark"><svg aria-hidden="true"><use href="#i-shuttle"/></svg></span><span class="site-name display"></span></div>
+  <div class="spinner" id="load-spinner"></div>
+  <div id="load-msg">Đang tải dữ liệu…</div>
+  <button class="btn-primary hidden" id="load-retry" type="button">Thử lại</button>
+</div>
+
+<header class="topbar">
+  <div class="logo"><span class="logo-mark"><svg aria-hidden="true"><use href="#i-shuttle"/></svg></span><span class="site-name display"></span></div>
+  <nav class="tabbar" aria-label="Chức năng">
+    <button type="button" class="tab" data-view="vote">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>
+      <span>Vote</span>
+    </button>
+    <button type="button" class="tab" data-view="history">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
+      <span>Lịch sử</span>
+    </button>
+    <button type="button" class="tab" data-view="register">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/></svg>
+      <span>Đăng ký</span>
+    </button>
+  </nav>
+  <button type="button" class="icon-btn" id="reload" aria-label="Tải lại">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+  </button>
+</header>
+
+<main>
+  <section class="view" id="v-vote">
+    <div class="hero">
+      <div class="hero-text">
+        <h1 class="display"><span class="tag">Cầu lông</span><span class="big">Vote buổi chơi</span></h1>
+        <p id="vote-sub"></p>
+      </div>
+      <svg class="hero-shuttle" aria-hidden="true"><use href="#i-shuttle"/></svg>
+    </div>
+    <div class="stack" id="sessions"></div>
+  </section>
+
+  <section class="view" id="v-history">
+    <div class="hero">
+      <div class="hero-text">
+        <h1 class="display"><span class="tag">Cầu lông</span><span class="big">Lịch sử</span></h1>
+        <p>Danh sách người đã tham gia các buổi trước.</p>
+      </div>
+      <svg class="hero-shuttle" aria-hidden="true"><use href="#i-shuttle"/></svg>
+    </div>
+    <div class="stack" id="hist"></div>
+  </section>
+
+  <section class="view" id="v-register">
+    <div class="hero">
+      <div class="hero-text">
+        <h1 class="display"><span class="tag">Cầu lông</span><span class="big">Đăng ký thành viên</span></h1>
+        <p>Sau khi quản trị duyệt, tên của bạn sẽ có trong danh sách vote.</p>
+      </div>
+      <svg class="hero-shuttle" aria-hidden="true"><use href="#i-shuttle"/></svg>
+    </div>
+    <form class="card form" id="reg-form" novalidate>
+      <label class="field"><span>Họ tên <em>*</em></span>
+        <input class="input" id="reg-ten" name="ten" autocomplete="name" maxlength="60" required></label>
+      <label class="field"><span>OPU / Bộ phận <em>*</em></span>
+        <input class="input" id="reg-bophan" name="boPhan" maxlength="60" required></label>
+      <label class="field"><span>Số điện thoại <small>(không bắt buộc)</small></span>
+        <input class="input" id="reg-sdt" name="sdt" type="tel" inputmode="tel" autocomplete="tel" maxlength="20"></label>
+      <button class="btn-primary" type="submit" id="reg-btn">Gửi đăng ký</button>
+      <p class="msg" id="reg-msg" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+  <div class="foot"><span id="build-info"></span></div>
+</main>
+
+<div class="sheet-bg" id="sheet-bg">
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="grab"></div>
+    <h2 class="detail-title display" id="sheet-title"></h2>
+    <div id="sheet-body"></div>
+    <div class="sheet-actions" id="sheet-actions"></div>
+  </div>
+</div>
+
+<script>
+window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-25T06:35:11.713Z"};
+// Dự án này không đọc Google Sheets bằng gviz/CSV: mọi dữ liệu đi qua Apps Script (xem src/app.js → api()).
+// File giữ lại vì scripts/build.js ghép nó vào bản build; chỉ chứa hàm định dạng ngày giờ dùng chung.
+
+const THU_TEN = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
+const YMD = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+// "2026-10-29" → "Thứ 5"
+function thuCua(ymd) {
+  const m = YMD.exec(ymd);
+  if (!m) return "";
+  return THU_TEN[(new Date(Date.UTC(+m[1], m[2] - 1, +m[3])).getUTCDay() + 6) % 7];
+}
+// "2026-10-29" → "29/10/2026" (sai dạng thì trả nguyên văn)
+function ngayVN(ymd) {
+  const m = YMD.exec(ymd);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : String(ymd);
+}
+// "2026-10-28 00:00" → "00:00 Thứ 4, 28/10" (sai dạng thì trả nguyên văn)
+function mocVN(s) {
+  const [ymd, hm] = String(s).split(" ");
+  const m = YMD.exec(ymd);
+  return m && hm ? `${hm} ${thuCua(ymd)}, ${m[3]}/${m[2]}` : String(s);
+}
+
+if (typeof module !== "undefined") module.exports = { thuCua, ngayVN, mocVN };
+
+// Cấu hình được chèn khi build (scripts/build.js). Dữ liệu KHÔNG nằm trong file: mọi đọc/ghi đi qua Apps Script (CFG.app.apiUrl).
+// Giao diện mẫu (preview/mockup.html) đặt window.MOCK_API để chạy bằng dữ liệu mẫu, không gọi mạng.
+const CFG = window.APP_CONFIG || { site: {}, app: {} };
+let STATE = { sessions: [], members: [] };  // trả về nguyên văn từ Apps Script
+let HISTORY = null;
+
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const key = v => String(v ?? "").normalize("NFC").trim().toLowerCase();  // chỉ dùng để SO SÁNH
+const ICONS = {
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  pin: '<path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  unlock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>'
+};
+function icon(name) {  // chỉ dùng chuỗi SVG cố định ở trên, không chứa dữ liệu
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("aria-hidden", "true"); s.innerHTML = ICONS[name];
+  return s;
+}
+
+// ===== Gọi Apps Script bằng JSONP qua thẻ <script> (fetch() vướng CORS, nhất là khi mở file trực tiếp) =====
+let seq = 0;
+function jsonp(params) {
+  return new Promise((resolve, reject) => {
+    if (!CFG.app || !CFG.app.apiUrl) return reject(new Error("Chưa cấu hình địa chỉ Apps Script (config.json → app.apiUrl)."));
+    const cb = "__api" + (++seq) + "_" + Date.now();
+    const s = document.createElement("script");
+    const done = () => { clearTimeout(timer); delete window[cb]; s.remove(); };
+    const timer = setTimeout(() => { done(); reject(new Error("Máy chủ phản hồi quá lâu. Kiểm tra mạng rồi thử lại.")); }, 30000);
+    window[cb] = data => { done(); resolve(data); };
+    s.onerror = () => { done(); reject(new Error("Không kết nối được máy chủ. Kiểm tra mạng internet rồi thử lại.")); };
+    const q = new URLSearchParams({ ...params, callback: cb, _: Date.now() });
+    s.src = CFG.app.apiUrl + "?" + q.toString();
+    document.head.append(s);
+  });
+}
+async function api(action, params = {}) {
+  const res = window.MOCK_API ? await window.MOCK_API(action, params) : await jsonp({ action, ...params });
+  if (!res || !res.ok) throw new Error((res && res.loi) || "Có lỗi xảy ra, vui lòng thử lại.");
+  return res;
+}
+
+// ===== Tải trạng thái =====
+async function loadState() {
+  const scr = $("loading-screen");
+  scr.classList.remove("hidden", "error");
+  $("load-spinner").classList.remove("hidden");
+  $("load-retry").classList.add("hidden");
+  $("load-msg").textContent = "Đang tải dữ liệu…";
+  try {
+    STATE = await api("state");
+  } catch (e) {
+    scr.classList.add("error");
+    $("load-spinner").classList.add("hidden");
+    $("load-msg").textContent = e.message;
+    $("load-retry").classList.remove("hidden");
+    return;
+  }
+  HISTORY = null;
+  scr.classList.add("hidden");
+  renderVote();
+  if (current === "history") loadHistory();
+}
+
+// ===== Tab Vote =====
+function renderVote() {
+  const box = $("sessions");
+  box.replaceChildren();
+  const t = new Date(), p = n => String(n).padStart(2, "0");
+  $("vote-sub").textContent = `Cập nhật lúc ${p(t.getHours())}:${p(t.getMinutes())}`;
+  if (!STATE.sessions.length) { box.append(el("div", "card empty", "Hiện chưa có buổi nào đang mở vote.")); return; }
+  STATE.sessions.forEach(s => box.append(sessionCard(s)));
+}
+
+function infoRow(ic, label, value) {
+  const r = el("div", "info-row"); const t = el("span");
+  if (label) t.append(el("b", null, label + " "));
+  t.append(document.createTextNode(value));
+  r.append(icon(ic), t);
+  return r;
+}
+
+function sessionCard(s) {
+  const tt = s.trangThai, card = el("article", "card session");
+  card.dataset.ma = s.ma;
+
+  const head = el("div", "s-head"), title = el("div");
+  title.append(el("h2", "s-title display", s.thu), el("div", "s-date", ngayVN(s.ngay)));
+  head.append(title, el("span", "pill pill-" + tt.ma, tt.nhan));
+
+  const info = el("div", "s-info");
+  info.append(infoRow("clock", "", s.gio), infoRow("pin", "", s.san));
+  if (tt.ma === "sapmo") info.append(infoRow("unlock", "Mở vote:", mocVN(s.moLuc)));
+  info.append(infoRow("lock", "Đóng vote:", mocVN(s.dongLuc)));
+
+  const n = s.votes.length, max = Number(s.max) || 0;
+  const count = el("div", "s-count"), line = el("div", "count-line");
+  line.append(el("span", "count-num", String(n)), el("span", "count-max", `/ ${s.max} người`));
+  const bar = el("div", "bar" + (max && n >= max ? " full" : "")), fill = el("span");
+  fill.style.width = (max ? Math.min(100, n / max * 100) : 0) + "%";
+  bar.append(fill); count.append(line, bar);
+
+  card.append(head, info, count);
+  if (tt.voteDuoc) card.append(voteForm(s));
+  const msg = el("p", "msg"); msg.setAttribute("role", "status"); msg.setAttribute("aria-live", "polite");
+  card.append(msg);
+
+  if (n) {
+    const list = el("div", "s-list"), ol = el("ol", "voters");
+    list.append(el("h3", null, `Danh sách đã vote (${n})`));
+    s.votes.forEach((v, i) => {
+      const li = el("li", "voter"), who = el("div", "who");
+      who.append(el("b", null, v.ten));
+      if (v.boPhan) who.append(el("small", null, v.boPhan));
+      li.append(el("span", "num", String(i + 1)), who);
+      if (tt.huyDuoc) {
+        const b = el("button", "btn-cancel", "Huỷ"); b.type = "button";
+        b.setAttribute("aria-label", "Huỷ vote của " + v.ten);
+        b.onclick = () => confirmCancel(s, v);
+        li.append(b);
+      }
+      ol.append(li);
+    });
+    list.append(ol); card.append(list);
+  }
+  return card;
+}
+
+function voteForm(s) {
+  const f = el("form", "s-form"); f.noValidate = true;
+  const voted = new Set(s.votes.map(v => key(v.ten)));
+  const avail = STATE.members.filter(m => !voted.has(key(m.ten)));  // giữ đúng thứ tự trong Sheets
+  const search = el("input", "input"); search.type = "search"; search.placeholder = "Gõ để tìm tên…"; search.setAttribute("aria-label", "Tìm tên");
+  const sel = el("select", "select"); sel.setAttribute("aria-label", "Chọn tên thành viên");
+  const fill = () => {
+    const q = key(search.value);
+    sel.replaceChildren(new Option(avail.length ? "— Chọn tên —" : "Chưa có thành viên nào để chọn", ""));
+    avail.filter(m => !q || key(m.ten + " " + m.boPhan).includes(q))
+      .forEach(m => sel.append(new Option(m.boPhan ? `${m.ten} — ${m.boPhan}` : m.ten, m.ten)));
+    if (q && sel.options.length === 2) sel.selectedIndex = 1;
+  };
+  search.oninput = fill; fill();
+  const btn = el("button", "btn-primary", "Vote"); btn.type = "submit";
+  f.append(search, sel, btn);
+  f.onsubmit = async e => {
+    e.preventDefault();
+    if (!sel.value) return showMsg(s.ma, "Vui lòng chọn tên.", false);
+    btn.disabled = true; btn.textContent = "Đang gửi…";
+    try { const res = await api("vote", { buoi: s.ma, ten: sel.value }); afterAction(res, s.ma); }
+    catch (err) { btn.disabled = false; btn.textContent = "Vote"; showMsg(s.ma, err.message, false); }
+  };
+  return f;
+}
+
+function afterAction(res, ma) {
+  STATE = res; HISTORY = null;
+  renderVote();
+  showMsg(ma, res.thongBao || "Đã cập nhật.", true);
+}
+function showMsg(ma, text, ok) {
+  const card = [...document.querySelectorAll(".session")].find(c => c.dataset.ma === ma);
+  const m = card && card.querySelector(".msg");
+  if (!m) return;
+  m.className = "msg " + (ok ? "ok" : "err"); m.textContent = text;
+}
+
+function confirmCancel(s, v) {
+  openSheet("Huỷ vote?", `${v.ten} · ${s.thu} ${ngayVN(s.ngay)}`, null, [
+    ["Huỷ vote", "btn-primary btn-danger", async b => {
+      b.disabled = true; b.textContent = "Đang huỷ…";
+      try { const res = await api("cancel", { id: v.id }); closeSheet(); afterAction(res, s.ma); }
+      catch (err) { closeSheet(); showMsg(s.ma, err.message, false); }
+    }],
+    ["Không", "btn-ghost", closeSheet]
+  ]);
+}
+
+// ===== Tab Lịch sử =====
+async function loadHistory() {
+  const box = $("hist");
+  if (HISTORY) return renderHistory();
+  box.replaceChildren(el("div", "empty", "Đang tải lịch sử…"));
+  try { HISTORY = (await api("history")).sessions; renderHistory(); }
+  catch (e) {
+    box.replaceChildren(el("div", "card empty", e.message));
+    const b = el("button", "btn-ghost", "Thử lại"); b.type = "button"; b.onclick = loadHistory; box.append(b);
+  }
+}
+function renderHistory() {
+  const box = $("hist");
+  box.replaceChildren();
+  if (!HISTORY.length) { box.append(el("div", "card empty", "Chưa có buổi nào đã diễn ra.")); return; }
+  HISTORY.forEach(s => {
+    const b = el("button", "hist-item"); b.type = "button";
+    const main = el("div", "h-main");
+    main.append(el("b", null, `${s.thu} · ${ngayVN(s.ngay)}`), el("span", null, `${s.gio} · ${s.san}`));
+    b.append(main, el("span", "h-count", `${s.votes.length} người`));
+    b.onclick = () => openHistory(s);
+    box.append(b);
+  });
+}
+function openHistory(s) {
+  const body = el("div");
+  if (!s.votes.length) body.append(el("p", "empty", "Không có ai tham gia."));
+  else {
+    const ol = el("ol", "voters");
+    s.votes.forEach((v, i) => {
+      const li = el("li", "voter"), who = el("div", "who");
+      who.append(el("b", null, v.ten));
+      if (v.boPhan) who.append(el("small", null, v.boPhan));
+      li.append(el("span", "num", String(i + 1)), who); ol.append(li);
+    });
+    body.append(ol);
+  }
+  openSheet(`${s.thu} · ${ngayVN(s.ngay)}`, `${s.gio} · ${s.san} · ${s.votes.length} người`, body, [["Đóng", "btn-ghost", closeSheet]]);
+}
+
+// ===== Tab Đăng ký =====
+async function submitRegister(e) {
+  e.preventDefault();
+  const msg = $("reg-msg"), btn = $("reg-btn");
+  const ten = $("reg-ten").value.trim(), boPhan = $("reg-bophan").value.trim(), sdt = $("reg-sdt").value.trim();
+  const fail = t => { msg.className = "msg err"; msg.textContent = t; };
+  if (!ten) return fail("Vui lòng nhập họ tên.");
+  if (!boPhan) return fail("Vui lòng nhập OPU hoặc bộ phận.");
+  btn.disabled = true; btn.textContent = "Đang gửi…"; msg.textContent = "";
+  try {
+    const res = await api("register", { ten, boPhan, sdt });
+    $("reg-form").reset();
+    msg.className = "msg ok"; msg.textContent = res.thongBao;
+  } catch (err) { fail(err.message); }
+  btn.disabled = false; btn.textContent = "Gửi đăng ký";
+}
+
+// ===== Hộp thoại =====
+function openSheet(title, sub, body, actions) {
+  $("sheet-title").textContent = title;
+  const b = $("sheet-body"); b.replaceChildren();
+  if (sub) b.append(el("p", "sheet-sub", sub));
+  if (body) b.append(body);
+  const a = $("sheet-actions"); a.replaceChildren();
+  actions.forEach(([text, cls, fn]) => { const btn = el("button", cls, text); btn.type = "button"; btn.onclick = () => fn(btn); a.append(btn); });
+  $("sheet-bg").classList.add("open");
+}
+function closeSheet() { $("sheet-bg").classList.remove("open"); }
+
+// ===== Chuyển tab =====
+let current = "vote";
+function show(v) {
+  current = v;
+  document.querySelectorAll(".view").forEach(s => s.classList.toggle("active", s.id === "v-" + v));
+  document.querySelectorAll(".tab").forEach(t => { if (t.dataset.view === v) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
+  if (v === "history") loadHistory();
+  window.scrollTo(0, 0);
+}
+
+// ===== Khởi động =====
+const siteName = (CFG.site && CFG.site.name) || "Cầu Lông";
+document.title = siteName;
+document.querySelectorAll(".site-name").forEach(n => n.textContent = siteName);
+$("build-info").textContent = CFG.builtAt ? "Bản build " + new Date(CFG.builtAt).toLocaleString("vi-VN") : "";
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => show(t.dataset.view));
+$("reload").onclick = loadState;
+$("load-retry").onclick = loadState;
+$("reg-form").onsubmit = submitRegister;
+$("sheet-bg").onclick = e => { if (e.target.id === "sheet-bg") closeSheet(); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+show("vote");
+loadState();
+
+</script>
+</body>
+</html>
