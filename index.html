@@ -43,6 +43,9 @@ svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; s
 /* Chữ tiêu đề kiểu thể thao: in hoa, nghiêng, đậm */
 .display { font-family: var(--display); font-style: italic; font-weight: 900; text-transform: uppercase; letter-spacing: .01em; line-height: 1.35; }
 .s-title.display, .detail-title.display { text-transform: none; }  /* chứa dữ liệu từ Sheets → giữ nguyên hoa/thường */
+/* Chữ Hán: font Hán hệ thống, đứng thẳng (nghiêng giả làm chữ Hán méo, khó đọc). Phần tử lang="vi" (tên web, dữ liệu) không bị ảnh hưởng. */
+.display:lang(zh), .btn-primary:lang(zh) { font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", system-ui, sans-serif; font-style: normal; letter-spacing: .04em; }
+:lang(zh) { line-break: strict; }
 
 /* ===== Khung trang (mobile-first) ===== */
 main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(var(--tabbar-h) + 32px + env(safe-area-inset-bottom)); }
@@ -52,6 +55,12 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
 .logo-mark { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex: none; color: var(--on-lime);
   background: var(--lime); transform: skewX(-8deg); }
 .logo-mark svg { width: 24px; height: 24px; transform: skewX(8deg) rotate(-30deg); stroke-width: 1.8; }
+.top-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.lang-switch { display: flex; padding: 3px; gap: 2px; border-radius: 12px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08); }
+.lang-btn { min-width: 40px; min-height: 38px; padding: 0 8px; border: 0; border-radius: 9px; background: none; color: var(--on-dark);
+  font-weight: 800; font-size: 15px; line-height: 1.35; cursor: pointer; }
+.lang-btn[aria-pressed="true"] { background: var(--lime); color: var(--on-lime); }
+.lang-btn:focus-visible { outline: 3px solid var(--lime); outline-offset: 2px; }
 .icon-btn { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 12px; border: 1px solid rgba(255,255,255,.25);
   background: rgba(255,255,255,.08); color: var(--on-dark); cursor: pointer; }
 
@@ -197,40 +206,47 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
     <circle cx="12" cy="19" r="3"/><path d="M9.2 17.2 5 4M14.8 17.2 19 4M5 4q7-3 14 0M12 16V2.6M10.6 16.4 8.5 3.3M13.4 16.4l2.1-13.1M6.8 10h10.4"/>
   </symbol>
 </svg>
+<!-- data-i18n: chữ giao diện được dịch; data-i18n-aria / data-i18n-ph: nhãn đọc màn hình / chữ gợi ý. Tên web (lang="vi") giữ nguyên. -->
 
 <div class="loading-screen" id="loading-screen">
-  <div class="logo"><span class="logo-mark"><svg aria-hidden="true"><use href="#i-shuttle"/></svg></span><span class="site-name display"></span></div>
+  <div class="logo"><span class="logo-mark"><svg aria-hidden="true"><use href="#i-shuttle"/></svg></span><span class="site-name display" lang="vi"></span></div>
   <div class="spinner" id="load-spinner"></div>
   <div id="load-msg">Đang tải dữ liệu…</div>
-  <button class="btn-primary hidden" id="load-retry" type="button">Thử lại</button>
+  <button class="btn-primary hidden" id="load-retry" type="button" data-i18n="retry">Thử lại</button>
 </div>
 
 <header class="topbar">
-  <div class="logo"><span class="logo-mark"><svg aria-hidden="true"><use href="#i-shuttle"/></svg></span><span class="site-name display"></span></div>
-  <nav class="tabbar" aria-label="Chức năng">
+  <div class="logo"><span class="logo-mark"><svg aria-hidden="true"><use href="#i-shuttle"/></svg></span><span class="site-name display" lang="vi"></span></div>
+  <nav class="tabbar" data-i18n-aria="nav" aria-label="Chức năng">
     <button type="button" class="tab" data-view="vote">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>
-      <span>Vote</span>
+      <span data-i18n="tab.vote">Vote</span>
     </button>
     <button type="button" class="tab" data-view="history">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>
-      <span>Lịch sử</span>
+      <span data-i18n="tab.history">Lịch sử</span>
     </button>
     <button type="button" class="tab" data-view="register">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M19 8v6M16 11h6"/></svg>
-      <span>Đăng ký</span>
+      <span data-i18n="tab.register">Đăng ký</span>
     </button>
   </nav>
-  <button type="button" class="icon-btn" id="reload" aria-label="Tải lại">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
-  </button>
+  <div class="top-actions">
+    <div class="lang-switch" role="group" data-i18n-aria="lang.switch" aria-label="Chọn ngôn ngữ">
+      <button type="button" class="lang-btn" data-lang="vi" lang="vi" aria-label="Tiếng Việt">VI</button>
+      <button type="button" class="lang-btn" data-lang="zh" lang="zh-Hans" aria-label="简体中文">中</button>
+    </div>
+    <button type="button" class="icon-btn" id="reload" data-i18n-aria="reload" aria-label="Tải lại">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+    </button>
+  </div>
 </header>
 
 <main>
   <section class="view" id="v-vote">
     <div class="hero">
       <div class="hero-text">
-        <h1 class="display"><span class="tag">Cầu lông</span><span class="big">Vote buổi chơi</span></h1>
+        <h1 class="display"><span class="tag" data-i18n="hero.tag">Cầu lông</span><span class="big" data-i18n="vote.title">Vote buổi chơi</span></h1>
         <p id="vote-sub"></p>
       </div>
       <svg class="hero-shuttle" aria-hidden="true"><use href="#i-shuttle"/></svg>
@@ -241,8 +257,8 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
   <section class="view" id="v-history">
     <div class="hero">
       <div class="hero-text">
-        <h1 class="display"><span class="tag">Cầu lông</span><span class="big">Lịch sử</span></h1>
-        <p>Danh sách người đã tham gia các buổi trước.</p>
+        <h1 class="display"><span class="tag" data-i18n="hero.tag">Cầu lông</span><span class="big" data-i18n="hist.title">Lịch sử</span></h1>
+        <p data-i18n="hist.sub">Danh sách người đã tham gia các buổi trước.</p>
       </div>
       <svg class="hero-shuttle" aria-hidden="true"><use href="#i-shuttle"/></svg>
     </div>
@@ -252,19 +268,19 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
   <section class="view" id="v-register">
     <div class="hero">
       <div class="hero-text">
-        <h1 class="display"><span class="tag">Cầu lông</span><span class="big">Đăng ký thành viên</span></h1>
-        <p>Sau khi quản trị duyệt, tên của bạn sẽ có trong danh sách vote.</p>
+        <h1 class="display"><span class="tag" data-i18n="hero.tag">Cầu lông</span><span class="big" data-i18n="reg.title">Đăng ký thành viên</span></h1>
+        <p data-i18n="reg.sub">Sau khi quản trị duyệt, tên của bạn sẽ có trong danh sách vote.</p>
       </div>
       <svg class="hero-shuttle" aria-hidden="true"><use href="#i-shuttle"/></svg>
     </div>
     <form class="card form" id="reg-form" novalidate>
-      <label class="field"><span>Họ tên <em>*</em></span>
+      <label class="field"><span><span data-i18n="reg.name">Họ tên</span> <em>*</em></span>
         <input class="input" id="reg-ten" name="ten" autocomplete="name" maxlength="60" required></label>
-      <label class="field"><span>OPU / Bộ phận <em>*</em></span>
+      <label class="field"><span><span data-i18n="reg.dept">OPU / Bộ phận</span> <em>*</em></span>
         <input class="input" id="reg-bophan" name="boPhan" maxlength="60" required></label>
-      <label class="field"><span>Số điện thoại <small>(không bắt buộc)</small></span>
+      <label class="field"><span><span data-i18n="reg.phone">Số điện thoại</span> <small data-i18n="reg.optional">(không bắt buộc)</small></span>
         <input class="input" id="reg-sdt" name="sdt" type="tel" inputmode="tel" autocomplete="tel" maxlength="20"></label>
-      <button class="btn-primary" type="submit" id="reg-btn">Gửi đăng ký</button>
+      <button class="btn-primary" type="submit" id="reg-btn" data-i18n="reg.submit">Gửi đăng ký</button>
       <p class="msg" id="reg-msg" role="status" aria-live="polite"></p>
     </form>
   </section>
@@ -281,7 +297,7 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
 </div>
 
 <script>
-window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-25T06:52:50.840Z"};
+window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-25T07:00:02.696Z"};
 // Dự án này không đọc Google Sheets bằng gviz/CSV: mọi dữ liệu đi qua Apps Script (xem src/app.js → api()).
 // File giữ lại vì scripts/build.js ghép nó vào bản build; chỉ chứa hàm định dạng ngày giờ dùng chung.
 
@@ -308,14 +324,118 @@ function mocVN(s) {
 
 if (typeof module !== "undefined") module.exports = { thuCua, ngayVN, mocVN };
 
+// Ngôn ngữ giao diện: Tiếng Việt (vi) / Tiếng Trung giản thể (zh).
+// QUY TẮC: chỉ dịch chữ của GIAO DIỆN. Dữ liệu từ Sheets — tên người, OPU/bộ phận, sân/địa điểm, giờ — và tên web
+// giữ NGUYÊN VĂN tiếng Việt ở cả hai ngôn ngữ. Ở tiếng Trung: thứ tính từ ngày (vd. 星期四); ngày giờ khác viết
+// YYYY/MM/DD HH24:MI (vd. 2026/10/28 00:00, ngày không giờ: 2026/10/29). Giờ chơi "18:00 - 20:30" giữ nguyên.
+const I18N = {
+  vi: {
+    "tab.vote": "Vote", "tab.history": "Lịch sử", "tab.register": "Đăng ký", "nav": "Chức năng", "reload": "Tải lại",
+    "lang.switch": "Chọn ngôn ngữ",
+    "hero.tag": "Cầu lông", "vote.title": "Vote buổi chơi", "hist.title": "Lịch sử", "hist.sub": "Danh sách người đã tham gia các buổi trước.",
+    "reg.title": "Đăng ký thành viên", "reg.sub": "Sau khi quản trị duyệt, tên của bạn sẽ có trong danh sách vote.",
+    "reg.name": "Họ tên", "reg.dept": "OPU / Bộ phận", "reg.phone": "Số điện thoại", "reg.optional": "(không bắt buộc)", "reg.submit": "Gửi đăng ký",
+    "reg.needName": "Vui lòng nhập họ tên.", "reg.needDept": "Vui lòng nhập OPU hoặc bộ phận.",
+    "load": "Đang tải dữ liệu…", "retry": "Thử lại", "updated": "Cập nhật lúc {t}", "noSession": "Hiện chưa có buổi nào đang mở vote.",
+    "openAt": "Mở vote:", "closeAt": "Đóng vote:", "ofMax": "/ {max} người", "votedList": "Danh sách đã vote ({n})",
+    "cancel": "Huỷ", "cancelOf": "Huỷ vote của {name}", "search": "Gõ để tìm tên…", "searchLabel": "Tìm tên", "pickLabel": "Chọn tên thành viên",
+    "pick": "— Chọn tên —", "noMember": "Chưa có thành viên nào để chọn", "vote": "Vote", "sending": "Đang gửi…", "needPick": "Vui lòng chọn tên.",
+    "done": "Đã cập nhật.", "cancelQ": "Huỷ vote?", "cancelYes": "Huỷ vote", "no": "Không", "cancelling": "Đang huỷ…",
+    "histLoading": "Đang tải lịch sử…", "histEmpty": "Chưa có buổi nào đã diễn ra.", "people": "{n} người", "nobody": "Không có ai tham gia.", "close": "Đóng",
+    "build": "Bản build {t}",
+    "st.mo": "Đang mở", "st.du": "Đã đủ người", "st.dong": "Đã đóng", "st.sapmo": "Sắp mở", "st.chot": "Đã chốt",
+    "err.noApi": "Chưa cấu hình địa chỉ Apps Script (config.json → app.apiUrl).", "err.timeout": "Máy chủ phản hồi quá lâu. Kiểm tra mạng rồi thử lại.",
+    "err.network": "Không kết nối được máy chủ. Kiểm tra mạng internet rồi thử lại.", "err.generic": "Có lỗi xảy ra, vui lòng thử lại."
+  },
+  zh: {
+    "tab.vote": "投票", "tab.history": "历史记录", "tab.register": "注册", "nav": "功能", "reload": "刷新",
+    "lang.switch": "选择语言",
+    "hero.tag": "羽毛球", "vote.title": "场次投票", "hist.title": "历史记录", "hist.sub": "往期场次的参加人员名单。",
+    "reg.title": "会员注册", "reg.sub": "管理员审核通过后，您的名字将出现在投票名单中。",
+    "reg.name": "姓名", "reg.dept": "OPU / 部门", "reg.phone": "电话号码", "reg.optional": "（选填）", "reg.submit": "提交注册",
+    "reg.needName": "请输入姓名。", "reg.needDept": "请输入 OPU 或部门。",
+    "load": "正在加载数据…", "retry": "重试", "updated": "更新于 {t}", "noSession": "目前没有开放投票的场次。",
+    "openAt": "开放投票：", "closeAt": "截止投票：", "ofMax": "/ {max} 人", "votedList": "已投票名单（{n}）",
+    "cancel": "取消", "cancelOf": "取消 {name} 的投票", "search": "输入姓名搜索…", "searchLabel": "搜索姓名", "pickLabel": "选择会员姓名",
+    "pick": "— 选择姓名 —", "noMember": "暂无可选会员", "vote": "投票", "sending": "提交中…", "needPick": "请选择姓名。",
+    "done": "已更新。", "cancelQ": "取消投票？", "cancelYes": "取消投票", "no": "不取消", "cancelling": "正在取消…",
+    "histLoading": "正在加载历史记录…", "histEmpty": "暂无已结束的场次。", "people": "{n} 人", "nobody": "无人参加。", "close": "关闭",
+    "build": "版本 {t}",
+    "st.mo": "开放中", "st.du": "已满员", "st.dong": "已关闭", "st.sapmo": "即将开放", "st.chot": "已截止",
+    "err.noApi": "尚未配置 Apps Script 地址（config.json → app.apiUrl）。", "err.timeout": "服务器响应超时，请检查网络后重试。",
+    "err.network": "无法连接服务器，请检查网络后重试。", "err.generic": "发生错误，请重试。"
+  }
+};
+
+// Thông báo từ Apps Script (luôn tiếng Việt) → tiếng Trung. Tên người trong thông báo giữ nguyên. Không khớp mẫu nào → hiện nguyên văn.
+const SERVER_ZH = [
+  [/^Hệ thống đang bận/, () => "系统繁忙，请重试。"],
+  [/^Yêu cầu không hợp lệ/, () => "请求无效。"],
+  [/^Vui lòng nhập họ tên/, () => "请输入姓名。"],
+  [/^Vui lòng nhập OPU/, () => "请输入 OPU 或部门。"],
+  [/^Thông tin quá dài/, () => "信息过长。"],
+  [/^Tên này đã là thành viên\..*vd: "(.*)"\.$/, ex => `该姓名已是会员。如是同名的另一人，请加上区分，例如："${ex}"。`],
+  [/^Tên này đã là thành viên/, () => "该姓名已是会员。如是同名的另一人，请在姓名后加上区分（如部门）。"],
+  [/^Tên này đã đăng ký và đang chờ duyệt/, () => "该姓名已注册，正在等待审核。"],
+  [/^Đã gửi đăng ký/, () => "注册已提交，请等待管理员审核。"],
+  [/^Không tìm thấy buổi chơi/, () => "找不到该场次。"],
+  [/^Tên này chưa được duyệt/, () => "该姓名尚未通过会员审核。"],
+  [/^Buổi đã đủ (\d+) người/, n => `该场次已满 ${n} 人。`],
+  [/^Buổi này.*không vote được/, () => "该场次当前无法投票。"],
+  [/^(.+) đã vote buổi này rồi\.$/, name => `${name} 已投过本场次。`],
+  [/^Đã vote cho (.+)\.$/, name => `已为 ${name} 投票。`],
+  [/^Không tìm thấy lượt vote/, () => "找不到该投票（可能已取消）。"],
+  [/^Đã hết thời gian huỷ/, () => "本场次已过取消时间。"],
+  [/^Đã huỷ vote của (.+)\.$/, name => `已取消 ${name} 的投票。`]
+];
+
+let LANG = "vi";
+function t(key, p) {
+  const s = (I18N[LANG] && I18N[LANG][key]) || I18N.vi[key] || key;
+  return p ? s.replace(/\{(\w+)\}/g, (_, k) => (p[k] == null ? "" : p[k])) : s;
+}
+function tServer(msg) {
+  if (LANG !== "zh" || !msg) return msg;
+  for (const [re, f] of SERVER_ZH) { const m = re.exec(msg); if (m) return f(...m.slice(1)); }
+  return msg;
+}
+
+// Ngày giờ theo ngôn ngữ (dữ liệu sai dạng → trả nguyên văn)
+const THU_ZH = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
+function thuSoCua(ymd) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+  return m ? (new Date(Date.UTC(+m[1], m[2] - 1, +m[3])).getUTCDay() + 6) % 7 : -1;
+}
+function fmtThu(s) { const i = thuSoCua(s.ngay); return LANG === "zh" && i >= 0 ? THU_ZH[i] : s.thu; }  // tiếng Việt: nguyên văn cột Thu
+function fmtNgay(ymd) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+  if (!m) return String(ymd);
+  return LANG === "zh" ? `${m[1]}/${m[2]}/${m[3]}` : ngayVN(ymd);
+}
+// Giờ chơi (cột Gio, vd "18:00 - 20:30") KHÔNG đổi ở mọi ngôn ngữ. Các ngày giờ khác ở tiếng Trung: YYYY/MM/DD HH24:MI.
+function fmtMoc(s) {
+  const [ymd, hm] = String(s).split(" ");
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+  if (!m || !hm) return String(s);
+  return LANG === "zh" ? `${m[1]}/${m[2]}/${m[3]} ${hm}` : mocVN(s);
+}
+// Thời điểm trên máy người xem (giờ cập nhật, giờ build)
+function fmtNow(d) {
+  const p = n => String(n).padStart(2, "0"), hm = `${p(d.getHours())}:${p(d.getMinutes())}`;
+  return LANG === "zh" ? `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${hm}` : hm;
+}
+
 // Cấu hình được chèn khi build (scripts/build.js). Dữ liệu KHÔNG nằm trong file: mọi đọc/ghi đi qua Apps Script (CFG.app.apiUrl).
 // Giao diện mẫu (preview/mockup.html) đặt window.MOCK_API để chạy bằng dữ liệu mẫu, không gọi mạng.
+// Chữ giao diện lấy qua t() (src/i18n.js). Dữ liệu từ Sheets hiện nguyên văn, gắn lang="vi" (tên người, bộ phận, sân, giờ).
 const CFG = window.APP_CONFIG || { site: {}, app: {} };
 let STATE = { sessions: [], members: [] };  // trả về nguyên văn từ Apps Script
 let HISTORY = null;
+let LOADED_AT = null;
 
 const $ = id => document.getElementById(id);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const vi = e => { e.lang = "vi"; return e; };  // dữ liệu tiếng Việt giữ nguyên ở mọi ngôn ngữ
 const key = v => String(v ?? "").normalize("NFC").trim().toLowerCase();  // chỉ dùng để SO SÁNH
 const ICONS = {
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
@@ -333,13 +453,13 @@ function icon(name) {  // chỉ dùng chuỗi SVG cố định ở trên, không
 let seq = 0;
 function jsonp(params) {
   return new Promise((resolve, reject) => {
-    if (!CFG.app || !CFG.app.apiUrl) return reject(new Error("Chưa cấu hình địa chỉ Apps Script (config.json → app.apiUrl)."));
+    if (!CFG.app || !CFG.app.apiUrl) return reject(new Error(t("err.noApi")));
     const cb = "__api" + (++seq) + "_" + Date.now();
     const s = document.createElement("script");
     const done = () => { clearTimeout(timer); delete window[cb]; s.remove(); };
-    const timer = setTimeout(() => { done(); reject(new Error("Máy chủ phản hồi quá lâu. Kiểm tra mạng rồi thử lại.")); }, 30000);
+    const timer = setTimeout(() => { done(); reject(new Error(t("err.timeout"))); }, 30000);
     window[cb] = data => { done(); resolve(data); };
-    s.onerror = () => { done(); reject(new Error("Không kết nối được máy chủ. Kiểm tra mạng internet rồi thử lại.")); };
+    s.onerror = () => { done(); reject(new Error(t("err.network"))); };
     const q = new URLSearchParams({ ...params, callback: cb, _: Date.now() });
     s.src = CFG.app.apiUrl + "?" + q.toString();
     document.head.append(s);
@@ -347,7 +467,7 @@ function jsonp(params) {
 }
 async function api(action, params = {}) {
   const res = window.MOCK_API ? await window.MOCK_API(action, params) : await jsonp({ action, ...params });
-  if (!res || !res.ok) throw new Error((res && res.loi) || "Có lỗi xảy ra, vui lòng thử lại.");
+  if (!res || !res.ok) throw new Error(res && res.loi ? tServer(res.loi) : t("err.generic"));
   return res;
 }
 
@@ -357,7 +477,7 @@ async function loadState() {
   scr.classList.remove("hidden", "error");
   $("load-spinner").classList.remove("hidden");
   $("load-retry").classList.add("hidden");
-  $("load-msg").textContent = "Đang tải dữ liệu…";
+  $("load-msg").textContent = t("load");
   try {
     STATE = await api("state");
   } catch (e) {
@@ -368,6 +488,7 @@ async function loadState() {
     return;
   }
   HISTORY = null;
+  LOADED_AT = new Date();
   scr.classList.add("hidden");
   renderVote();
   if (current === "history") loadHistory();
@@ -377,17 +498,17 @@ async function loadState() {
 function renderVote() {
   const box = $("sessions");
   box.replaceChildren();
-  const t = new Date(), p = n => String(n).padStart(2, "0");
-  $("vote-sub").textContent = `Cập nhật lúc ${p(t.getHours())}:${p(t.getMinutes())}`;
-  if (!STATE.sessions.length) { box.append(el("div", "card empty", "Hiện chưa có buổi nào đang mở vote.")); return; }
+  $("vote-sub").textContent = LOADED_AT ? t("updated", { t: fmtNow(LOADED_AT) }) : "";
+  if (!STATE.sessions.length) { box.append(el("div", "card empty", t("noSession"))); return; }
   STATE.sessions.forEach(s => box.append(sessionCard(s)));
 }
 
-function infoRow(ic, label, value) {
-  const r = el("div", "info-row"); const t = el("span");
-  if (label) t.append(el("b", null, label + " "));
-  t.append(document.createTextNode(value));
-  r.append(icon(ic), t);
+function infoRow(ic, label, value, isData) {
+  const r = el("div", "info-row"); const tx = el("span");
+  if (label) tx.append(el("b", null, label + " "));
+  const v = el("span", null, value);
+  tx.append(isData ? vi(v) : v);
+  r.append(icon(ic), tx);
   return r;
 }
 
@@ -396,17 +517,19 @@ function sessionCard(s) {
   card.dataset.ma = s.ma;
 
   const head = el("div", "s-head"), title = el("div");
-  title.append(el("h2", "s-title display", s.thu), el("div", "s-date", ngayVN(s.ngay)));
-  head.append(title, el("span", "pill pill-" + tt.ma, tt.nhan));
+  const thu = el("h2", "s-title display", fmtThu(s));
+  if (LANG !== "zh") vi(thu);  // tiếng Việt: nguyên văn cột Thu
+  title.append(thu, el("div", "s-date", fmtNgay(s.ngay)));
+  head.append(title, el("span", "pill pill-" + tt.ma, t("st." + tt.ma)));
 
   const info = el("div", "s-info");
-  info.append(infoRow("clock", "", s.gio), infoRow("pin", "", s.san));
-  if (tt.ma === "sapmo") info.append(infoRow("unlock", "Mở vote:", mocVN(s.moLuc)));
-  info.append(infoRow("lock", "Đóng vote:", mocVN(s.dongLuc)));
+  info.append(infoRow("clock", "", s.gio, true), infoRow("pin", "", s.san, true));
+  if (tt.ma === "sapmo") info.append(infoRow("unlock", t("openAt"), fmtMoc(s.moLuc)));
+  info.append(infoRow("lock", t("closeAt"), fmtMoc(s.dongLuc)));
 
   const n = s.votes.length, max = Number(s.max) || 0;
   const count = el("div", "s-count"), line = el("div", "count-line");
-  line.append(el("span", "count-num", String(n)), el("span", "count-max", `/ ${s.max} người`));
+  line.append(el("span", "count-num", String(n)), el("span", "count-max", t("ofMax", { max: s.max })));
   const bar = el("div", "bar" + (max && n >= max ? " full" : "")), fill = el("span");
   fill.style.width = (max ? Math.min(100, n / max * 100) : 0) + "%";
   bar.append(fill); count.append(line, bar);
@@ -418,15 +541,12 @@ function sessionCard(s) {
 
   if (n) {
     const list = el("div", "s-list"), ol = el("ol", "voters");
-    list.append(el("h3", null, `Danh sách đã vote (${n})`));
+    list.append(el("h3", null, t("votedList", { n })));
     s.votes.forEach((v, i) => {
-      const li = el("li", "voter"), who = el("div", "who");
-      who.append(el("b", null, v.ten));
-      if (v.boPhan) who.append(el("small", null, v.boPhan));
-      li.append(el("span", "num", String(i + 1)), who);
+      const li = voterRow(v, i);
       if (tt.huyDuoc) {
-        const b = el("button", "btn-cancel", "Huỷ"); b.type = "button";
-        b.setAttribute("aria-label", "Huỷ vote của " + v.ten);
+        const b = el("button", "btn-cancel", t("cancel")); b.type = "button";
+        b.setAttribute("aria-label", t("cancelOf", { name: v.ten }));
         b.onclick = () => confirmCancel(s, v);
         li.append(b);
       }
@@ -437,36 +557,44 @@ function sessionCard(s) {
   return card;
 }
 
+function voterRow(v, i) {
+  const li = el("li", "voter"), who = el("div", "who");
+  who.append(vi(el("b", null, v.ten)));
+  if (v.boPhan) who.append(vi(el("small", null, v.boPhan)));
+  li.append(el("span", "num", String(i + 1)), who);
+  return li;
+}
+
 function voteForm(s) {
   const f = el("form", "s-form"); f.noValidate = true;
   const voted = new Set(s.votes.map(v => key(v.ten)));
   const avail = STATE.members.filter(m => !voted.has(key(m.ten)));  // giữ đúng thứ tự trong Sheets
-  const search = el("input", "input"); search.type = "search"; search.placeholder = "Gõ để tìm tên…"; search.setAttribute("aria-label", "Tìm tên");
-  const sel = el("select", "select"); sel.setAttribute("aria-label", "Chọn tên thành viên");
+  const search = el("input", "input"); search.type = "search"; search.placeholder = t("search"); search.setAttribute("aria-label", t("searchLabel"));
+  const sel = el("select", "select"); sel.setAttribute("aria-label", t("pickLabel"));
   const fill = () => {
     const q = key(search.value);
-    sel.replaceChildren(new Option(avail.length ? "— Chọn tên —" : "Chưa có thành viên nào để chọn", ""));
+    sel.replaceChildren(new Option(avail.length ? t("pick") : t("noMember"), ""));
     avail.filter(m => !q || key(m.ten + " " + m.boPhan).includes(q))
-      .forEach(m => sel.append(new Option(m.boPhan ? `${m.ten} — ${m.boPhan}` : m.ten, m.ten)));
+      .forEach(m => { const o = new Option(m.boPhan ? `${m.ten} — ${m.boPhan}` : m.ten, m.ten); o.lang = "vi"; sel.append(o); });
     if (q && sel.options.length === 2) sel.selectedIndex = 1;
   };
   search.oninput = fill; fill();
-  const btn = el("button", "btn-primary", "Vote"); btn.type = "submit";
+  const btn = el("button", "btn-primary", t("vote")); btn.type = "submit";
   f.append(search, sel, btn);
   f.onsubmit = async e => {
     e.preventDefault();
-    if (!sel.value) return showMsg(s.ma, "Vui lòng chọn tên.", false);
-    btn.disabled = true; btn.textContent = "Đang gửi…";
+    if (!sel.value) return showMsg(s.ma, t("needPick"), false);
+    btn.disabled = true; btn.textContent = t("sending");
     try { const res = await api("vote", { buoi: s.ma, ten: sel.value }); afterAction(res, s.ma); }
-    catch (err) { btn.disabled = false; btn.textContent = "Vote"; showMsg(s.ma, err.message, false); }
+    catch (err) { btn.disabled = false; btn.textContent = t("vote"); showMsg(s.ma, err.message, false); }
   };
   return f;
 }
 
 function afterAction(res, ma) {
-  STATE = res; HISTORY = null;
+  STATE = res; HISTORY = null; LOADED_AT = new Date();
   renderVote();
-  showMsg(ma, res.thongBao || "Đã cập nhật.", true);
+  showMsg(ma, res.thongBao ? tServer(res.thongBao) : t("done"), true);
 }
 function showMsg(ma, text, ok) {
   const card = [...document.querySelectorAll(".session")].find(c => c.dataset.ma === ma);
@@ -476,13 +604,14 @@ function showMsg(ma, text, ok) {
 }
 
 function confirmCancel(s, v) {
-  openSheet("Huỷ vote?", `${v.ten} · ${s.thu} ${ngayVN(s.ngay)}`, null, [
-    ["Huỷ vote", "btn-primary btn-danger", async b => {
-      b.disabled = true; b.textContent = "Đang huỷ…";
+  const who = vi(el("p", "sheet-sub", v.ten));
+  openSheet(t("cancelQ"), `${fmtThu(s)} · ${fmtNgay(s.ngay)}`, who, [
+    [t("cancelYes"), "btn-primary btn-danger", async b => {
+      b.disabled = true; b.textContent = t("cancelling");
       try { const res = await api("cancel", { id: v.id }); closeSheet(); afterAction(res, s.ma); }
       catch (err) { closeSheet(); showMsg(s.ma, err.message, false); }
     }],
-    ["Không", "btn-ghost", closeSheet]
+    [t("no"), "btn-ghost", closeSheet]
   ]);
 }
 
@@ -490,40 +619,40 @@ function confirmCancel(s, v) {
 async function loadHistory() {
   const box = $("hist");
   if (HISTORY) return renderHistory();
-  box.replaceChildren(el("div", "empty", "Đang tải lịch sử…"));
+  box.replaceChildren(el("div", "empty", t("histLoading")));
   try { HISTORY = (await api("history")).sessions; renderHistory(); }
   catch (e) {
     box.replaceChildren(el("div", "card empty", e.message));
-    const b = el("button", "btn-ghost", "Thử lại"); b.type = "button"; b.onclick = loadHistory; box.append(b);
+    const b = el("button", "btn-ghost", t("retry")); b.type = "button"; b.onclick = loadHistory; box.append(b);
   }
 }
 function renderHistory() {
   const box = $("hist");
   box.replaceChildren();
-  if (!HISTORY.length) { box.append(el("div", "card empty", "Chưa có buổi nào đã diễn ra.")); return; }
+  if (!HISTORY.length) { box.append(el("div", "card empty", t("histEmpty"))); return; }
   HISTORY.forEach(s => {
     const b = el("button", "hist-item"); b.type = "button";
-    const main = el("div", "h-main");
-    main.append(el("b", null, `${s.thu} · ${ngayVN(s.ngay)}`), el("span", null, `${s.gio} · ${s.san}`));
-    b.append(main, el("span", "h-count", `${s.votes.length} người`));
+    const main = el("div", "h-main"), sub = el("span");
+    sub.append(vi(el("span", null, s.gio)), document.createTextNode(" · "), vi(el("span", null, s.san)));
+    main.append(el("b", null, `${fmtThu(s)} · ${fmtNgay(s.ngay)}`), sub);
+    b.append(main, el("span", "h-count", t("people", { n: s.votes.length })));
     b.onclick = () => openHistory(s);
     box.append(b);
   });
 }
 function openHistory(s) {
   const body = el("div");
-  if (!s.votes.length) body.append(el("p", "empty", "Không có ai tham gia."));
+  const sub = el("p", "sheet-sub");
+  sub.append(vi(el("span", null, s.gio)), document.createTextNode(" · "), vi(el("span", null, s.san)),
+    document.createTextNode(" · " + t("people", { n: s.votes.length })));
+  body.append(sub);
+  if (!s.votes.length) body.append(el("p", "empty", t("nobody")));
   else {
     const ol = el("ol", "voters");
-    s.votes.forEach((v, i) => {
-      const li = el("li", "voter"), who = el("div", "who");
-      who.append(el("b", null, v.ten));
-      if (v.boPhan) who.append(el("small", null, v.boPhan));
-      li.append(el("span", "num", String(i + 1)), who); ol.append(li);
-    });
+    s.votes.forEach((v, i) => ol.append(voterRow(v, i)));
     body.append(ol);
   }
-  openSheet(`${s.thu} · ${ngayVN(s.ngay)}`, `${s.gio} · ${s.san} · ${s.votes.length} người`, body, [["Đóng", "btn-ghost", closeSheet]]);
+  openSheet(`${fmtThu(s)} · ${fmtNgay(s.ngay)}`, "", body, [[t("close"), "btn-ghost", closeSheet]]);
 }
 
 // ===== Tab Đăng ký =====
@@ -531,16 +660,16 @@ async function submitRegister(e) {
   e.preventDefault();
   const msg = $("reg-msg"), btn = $("reg-btn");
   const ten = $("reg-ten").value.trim(), boPhan = $("reg-bophan").value.trim(), sdt = $("reg-sdt").value.trim();
-  const fail = t => { msg.className = "msg err"; msg.textContent = t; };
-  if (!ten) return fail("Vui lòng nhập họ tên.");
-  if (!boPhan) return fail("Vui lòng nhập OPU hoặc bộ phận.");
-  btn.disabled = true; btn.textContent = "Đang gửi…"; msg.textContent = "";
+  const fail = tx => { msg.className = "msg err"; msg.textContent = tx; };
+  if (!ten) return fail(t("reg.needName"));
+  if (!boPhan) return fail(t("reg.needDept"));
+  btn.disabled = true; btn.textContent = t("sending"); msg.textContent = "";
   try {
     const res = await api("register", { ten, boPhan, sdt });
     $("reg-form").reset();
-    msg.className = "msg ok"; msg.textContent = res.thongBao;
+    msg.className = "msg ok"; msg.textContent = tServer(res.thongBao);
   } catch (err) { fail(err.message); }
-  btn.disabled = false; btn.textContent = "Gửi đăng ký";
+  btn.disabled = false; btn.textContent = t("reg.submit");
 }
 
 // ===== Hộp thoại =====
@@ -560,22 +689,43 @@ let current = "vote";
 function show(v) {
   current = v;
   document.querySelectorAll(".view").forEach(s => s.classList.toggle("active", s.id === "v-" + v));
-  document.querySelectorAll(".tab").forEach(t => { if (t.dataset.view === v) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
+  document.querySelectorAll(".tab").forEach(tb => { if (tb.dataset.view === v) tb.setAttribute("aria-current", "page"); else tb.removeAttribute("aria-current"); });
   if (v === "history") loadHistory();
   window.scrollTo(0, 0);
+}
+
+// ===== Ngôn ngữ (lưu lựa chọn trên máy người xem; không lưu được thì vẫn chạy bình thường) =====
+function setLang(l) {
+  LANG = l === "zh" ? "zh" : "vi";
+  try { localStorage.setItem("lang", LANG); } catch (e) {}
+  document.documentElement.lang = LANG === "zh" ? "zh-Hans" : "vi";
+  document.querySelectorAll("[data-i18n]").forEach(n => n.textContent = t(n.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(n => n.setAttribute("aria-label", t(n.dataset.i18nAria)));
+  document.querySelectorAll(".lang-btn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  $("build-info").textContent = CFG.builtAt ? t("build", { t: fmtNow(new Date(CFG.builtAt)) }) : "";
+  if (!$("loading-screen").classList.contains("error")) $("load-msg").textContent = t("load");
+  $("reg-msg").textContent = "";
+  renderVote();
+  if (HISTORY) renderHistory();
+  closeSheet();
+}
+function savedLang() {
+  try { const s = localStorage.getItem("lang"); if (s) return s; } catch (e) {}
+  return /^zh/i.test(navigator.language || "") ? "zh" : "vi";
 }
 
 // ===== Khởi động =====
 const siteName = (CFG.site && CFG.site.name) || "Cầu Lông";
 document.title = siteName;
 document.querySelectorAll(".site-name").forEach(n => n.textContent = siteName);
-$("build-info").textContent = CFG.builtAt ? "Bản build " + new Date(CFG.builtAt).toLocaleString("vi-VN") : "";
-document.querySelectorAll(".tab").forEach(t => t.onclick = () => show(t.dataset.view));
+document.querySelectorAll(".tab").forEach(tb => tb.onclick = () => show(tb.dataset.view));
+document.querySelectorAll(".lang-btn").forEach(b => b.onclick = () => setLang(b.dataset.lang));
 $("reload").onclick = loadState;
 $("load-retry").onclick = loadState;
 $("reg-form").onsubmit = submitRegister;
 $("sheet-bg").onclick = e => { if (e.target.id === "sheet-bg") closeSheet(); };
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+setLang(savedLang());
 show("vote");
 loadState();
 
