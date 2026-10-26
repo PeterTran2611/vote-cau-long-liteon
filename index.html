@@ -178,6 +178,9 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
 .btn-mini-bad { color: var(--bad); }
 .dd-edit { flex: 1 1 100%; display: grid; gap: 8px; }
 .dd-add { margin-top: 8px; }
+.dd-confirm { display: grid; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.btn-primary.btn-confirm { background: var(--navy); color: #ffffff; }  /* 2 class: thắng .btn-primary khai báo phía sau */
+.dd-locked { margin: 0 0 8px; padding: 10px 12px; border-radius: 12px; background: var(--warn-soft); color: var(--text); font-weight: 600; line-height: 1.5; }
 .dd-add .dd-head { margin: 8px 0 0; }
 
 /* ===== Đăng ký ===== */
@@ -343,7 +346,7 @@ main { width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px calc(va
 </div>
 
 <script>
-window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-26T15:14:35.126Z"};
+window.APP_CONFIG = {"site":{"name":"Cầu Lông LITEON","description":"Vote buổi chơi Thứ 5 · Thứ 6 · Chủ nhật","lang":"vi"},"sheets":[],"skipped":[],"requiredColumns":[],"app":{"apiUrl":"https://script.google.com/macros/s/AKfycbxDR4lxzMno7cd1RzVNx4Y5MSCgzPzWqU-VJ1rn9jUCBIubVI0kj9TZKcHKmtyShU41/exec"},"builtAt":"2026-10-26T15:23:03.139Z"};
 // Dự án này không đọc Google Sheets bằng gviz/CSV: mọi dữ liệu đi qua Apps Script (xem src/app.js → api()).
 // File giữ lại vì scripts/build.js ghép nó vào bản build; chỉ chứa hàm định dạng ngày giờ dùng chung.
 
@@ -400,6 +403,9 @@ const I18N = {
     "dd.add": "Thêm người có mặt", "dd.addBtn": "Thêm", "dd.companions": "Số người đi cùng", "dd.edit": "Sửa", "dd.save": "Lưu",
     "dd.del": "Xoá", "dd.delQ": "Xoá {name} khỏi điểm danh?", "dd.cancelEdit": "Thôi", "dd.empty": "Chưa có ai trong điểm danh.", "dd.back": "Quay lại",
     "dd.regList": "Danh sách đăng ký",
+    "dd.confirm": "Xác nhận điểm danh", "dd.confirmHint": "Mỗi buổi chỉ xác nhận 1 lần. Sau khi xác nhận, muốn sửa phải sửa trên file Sheets.",
+    "dd.confirmQ": "Xác nhận điểm danh buổi này?\nSau khi xác nhận sẽ KHÔNG sửa được trên web nữa — muốn sửa phải sửa trên file Sheets.",
+    "dd.locked": "Đã xác nhận lúc {t}. Muốn sửa, hãy sửa trên file Sheets.", "dd.confirmed": "Đã xác nhận",
     "err.noApi": "Chưa cấu hình địa chỉ Apps Script (config.json → app.apiUrl).", "err.timeout": "Máy chủ phản hồi quá lâu. Kiểm tra mạng rồi thử lại.",
     "err.network": "Không kết nối được máy chủ. Kiểm tra mạng internet rồi thử lại.", "err.generic": "Có lỗi xảy ra, vui lòng thử lại."
   },
@@ -428,6 +434,9 @@ const I18N = {
     "dd.add": "添加到场人员", "dd.addBtn": "添加", "dd.companions": "同行人数", "dd.edit": "修改", "dd.save": "保存",
     "dd.del": "删除", "dd.delQ": "将 {name} 从签到中删除？", "dd.cancelEdit": "取消", "dd.empty": "签到名单为空。", "dd.back": "返回",
     "dd.regList": "报名名单",
+    "dd.confirm": "确认签到", "dd.confirmHint": "每场只能确认一次。确认后如需修改，请在 Sheets 文件中修改。",
+    "dd.confirmQ": "确认本场签到？\n确认后将无法在网页上修改，如需修改请在 Sheets 文件中修改。",
+    "dd.locked": "已于 {t} 确认。如需修改，请在 Sheets 文件中修改。", "dd.confirmed": "已确认",
     "err.noApi": "尚未配置 Apps Script 地址（config.json → app.apiUrl）。", "err.timeout": "服务器响应超时，请检查网络后重试。",
     "err.network": "无法连接服务器，请检查网络后重试。", "err.generic": "发生错误，请重试。"
   }
@@ -468,7 +477,10 @@ const SERVER_ZH = [
   [/^Đã thêm (.+) vào điểm danh\.$/, name => `已将 ${name} 加入签到。`],
   [/^Không tìm thấy người này trong điểm danh/, () => "签到名单中找不到此人（可能已删除）。"],
   [/^Đã sửa điểm danh của (.+)\.$/, name => `已修改 ${name} 的签到。`],
-  [/^Đã xoá (.+) khỏi điểm danh\.$/, name => `已将 ${name} 从签到中删除。`]
+  [/^Đã xoá (.+) khỏi điểm danh\.$/, name => `已将 ${name} 从签到中删除。`],
+  [/^Buổi này đã xác nhận điểm danh/, () => "本场签到已确认。如需修改，请在 Sheets 文件中修改。"],
+  [/^Chưa có ai trong điểm danh để xác nhận/, () => "签到名单为空，无法确认。"],
+  [/^Đã xác nhận điểm danh/, () => "签到已确认。"]
 ];
 
 let LANG = "vi";
@@ -777,7 +789,7 @@ function renderHistory() {
     const main = el("div", "h-main"), sub = el("span");
     sub.append(vi(el("span", null, s.gio)), document.createTextNode(" · "), vi(el("span", null, s.san)));
     main.append(el("b", null, `${fmtThu(s)} · ${fmtNgay(s.ngay)}`), sub);
-    if (daDD(s)) main.append(el("span", "dd-badge", t("dd.done")));
+    if (daDD(s)) main.append(el("span", "dd-badge", t(daXN(s) ? "dd.confirmed" : "dd.done")));
     b.append(main, el("span", "h-count", t("people", { n: soNguoiLS(s) })));
     b.onclick = () => openHistory(s.ma);
     box.append(b);
@@ -785,6 +797,7 @@ function renderHistory() {
 }
 // Lịch sử: đã điểm danh → hiện danh sách điểm danh; chưa → danh sách đăng ký (vote + giao lưu)
 const daDD = s => !!(s.diemDanh && s.diemDanh.da);
+const daXN = s => !!(s.diemDanh && s.diemDanh.xacNhan);  // đã xác nhận → khoá điểm danh trên web
 const soNguoiLS = s => (daDD(s) ? s.diemDanh.tong : tongCua(s));
 const histBuoi = ma => (HISTORY || []).find(x => x.ma === ma);
 function subLine(s, n) {
@@ -804,7 +817,8 @@ function openHistory(ma) {
   const body = el("div");
   body.append(subLine(s, soNguoiLS(s)));
   if (daDD(s)) {
-    body.append(el("h3", "dd-head", t("dd.done")));
+    body.append(el("h3", "dd-head", t(daXN(s) ? "dd.confirmed" : "dd.done")));
+    if (daXN(s)) body.append(el("p", "dd-locked", t("dd.locked", { t: fmtMoc(s.diemDanh.xacNhan) })));
     if (!s.diemDanh.ds.length) body.append(el("p", "empty", t("dd.empty")));
     else { const ol = el("ol", "voters"); s.diemDanh.ds.forEach((d, i) => ol.append(ddRow(d, i))); body.append(ol); }
   } else {
@@ -818,7 +832,8 @@ function openHistory(ma) {
     if (gl.length) body.append(guestList(gl, Number(s.soGiaoLuu) || 0));
   }
   const actions = [[t("close"), "btn-ghost", closeSheet]];
-  if (s.diemDanh) actions.unshift([t("dd.btn"), "btn-primary btn-att", () => openAttendance(ma)]);  // máy chủ cũ chưa có điểm danh → ẩn
+  // máy chủ cũ chưa có điểm danh → ẩn; đã xác nhận → khoá, chỉ sửa trên Sheets
+  if (s.diemDanh && !daXN(s)) actions.unshift([t("dd.btn"), "btn-primary btn-att", () => openAttendance(ma)]);
   openSheet(`${fmtThu(s)} · ${fmtNgay(s.ngay)}`, "", body, actions);
 }
 
@@ -856,6 +871,16 @@ function openAttendance(ma, note, ok) {
   const msg = el("p", "msg"); msg.setAttribute("role", "status"); msg.setAttribute("aria-live", "polite");
   if (note) { msg.className = "msg " + (ok ? "ok" : "err"); msg.textContent = note; }
   body.append(subLine(s, dd.tong), el("p", "dd-total", t("dd.total", { n: dd.tong })), msg);
+
+  if (daXN(s)) {  // đã xác nhận: chỉ xem
+    body.append(el("p", "dd-locked", t("dd.locked", { t: fmtMoc(dd.xacNhan) })));
+    const ol = el("ol", "voters dd-list");
+    dd.ds.forEach((d, i) => ol.append(ddRow(d, i)));
+    body.append(ol);
+    openSheet(`${t("dd.title")} · ${fmtThu(s)} · ${fmtNgay(s.ngay)}`, "", body,
+      [[t("dd.back"), "btn-ghost", () => openHistory(ma)], [t("close"), "btn-ghost", closeSheet]]);
+    return;
+  }
 
   if (!dd.da) {
     body.append(el("p", "gl-hint", t("dd.fromRegHint")));
@@ -905,6 +930,15 @@ function openAttendance(ma, note, ok) {
     attCall(ma, "attAdd", { buoi: ma, ten: sel.value, diCung: num.value }, ab, msg);
   };
   body.append(add);
+
+  // Xác nhận điểm danh: mỗi buổi 1 lần, sau đó khoá trên web
+  if (dd.ds.length) {
+    const box = el("div", "dd-confirm");
+    const cb = el("button", "btn-primary btn-confirm", t("dd.confirm")); cb.type = "button";
+    cb.onclick = () => { if (window.confirm(t("dd.confirmQ"))) attCall(ma, "attConfirm", { buoi: ma }, cb, msg); };
+    box.append(el("p", "gl-hint", t("dd.confirmHint")), cb);
+    body.append(box);
+  }
 
   openSheet(`${t("dd.title")} · ${fmtThu(s)} · ${fmtNgay(s.ngay)}`, "", body,
     [[t("dd.back"), "btn-ghost", () => openHistory(ma)], [t("close"), "btn-ghost", closeSheet]]);
